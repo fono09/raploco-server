@@ -20,17 +20,31 @@ A Simple tasker
 
 ### Create User [POST]
 
-+ Request
-    
-        {
-            "name" : "user_name"
-        }
-
-
 + Response 201 (application/json)
 
         {
             "id" : 1,
             "name" : "user_name",
             "token" : "awsedrftgyhujikoklp"
+        }
+
+### Get a User [GET /users/{id}]
+
++ Response 200
+
+        {
+            "id": 2,
+            "name": "user_name"
+        }
+
+## Tasks Collection [/tasks]
+
++ Response 200
+
+        {
+            "id": 1,
+            "name": "task_name",
+            "deadline":"2017-09-10 20:34:16 +0900",
+            "cost": 20,
+            "created_at": "2017-09-09 20:34:16 +0900",
         }
