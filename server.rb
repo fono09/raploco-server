@@ -38,6 +38,9 @@ class Favorite < ActiveRecord::Base
     belongs_to :favorite_user, class_name: 'User', foreign_key: 'favorite_user_id'
 end
 
+class Genre < ActiveRecord::Base
+end
+
 get '/ok' do
     {message: 'ok'}.to_json
 end
@@ -50,8 +53,8 @@ post '/users/favorites' do
     halt 404, 'User not found.' if user.empty?
     user = user.first
 
-    unless Favorite.where(user_id: current_user.id, favorite_user_id:user.id).empty? then
-        favorite = Favorite.new(user_id: current_user.id, favorite_user_id:user.id)
+    if Favorite.where(user_id: current_user.id, favorite_user_id:user.id).empty? then
+        favorite = Favorite.new(user: current_user, favorite_user:user)
         favorite.save
     end
 
@@ -101,7 +104,7 @@ end
 post '/tasks' do
     current_user = auth
     task = JSON.parse(request.body.read)
-    task = Task.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"])
+    task = Task.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"], genre_id: task["genre"])
     task.save
     
     task.to_json(except:[:user_id])
@@ -126,3 +129,26 @@ get '/tasks' do
     { tasks: tasks }.to_json(except:[:user_id])
 end
 
+
+post '/genres' do 
+    current_user = auth
+
+    genre = JSON.parse(request.body.read)
+    e_genre = Genre.where(name: genre["name"])
+
+    if e_genre.empty? then
+        genre = Genre.new(name: genre["name"])
+        genre.save
+    else
+        genre = e_genre.first
+    end
+
+    genre.to_json
+end
+
+get '/genres' do
+    current_user = auth
+    genres = Genre.all
+    {"genres": genres }.to_json
+end
+    
