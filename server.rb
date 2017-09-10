@@ -30,6 +30,9 @@ end
 class Tasks < ActiveRecord::Base
 end
 
+class Favorites < ActiveRecord::Base
+end
+
 get '/ok' do
     '{"message":"ok"}'
 end
@@ -83,4 +86,36 @@ get '/tasks' do
     { tasks: tasks }.to_json(except:[:user_id])
 end
 
+post '/users/favorites' do
+    current_user = auth
+    user = JSON.parse(request.body.read)
 
+    user = User.where(id: user["id"])
+    halt 404, 'User not found.' if user.empty?
+
+    favorite = Favorites.new(user_id: current_user.id, favorite_user_id:user.id)
+    favorite.save
+
+    user.to_json(except:[:token])
+end
+
+
+get '/users/favorites' do
+    current_user = auth
+
+    users = Favorites.where(user_id: current_user.id).joins(:favorite_user_id, :users)
+
+    {"users":favorites}.to_json(except:[:token, :favorite_id])
+end
+
+delete '/users/favorites/:id' do
+    current_user = auth
+
+    favorites = Favorites.where(user_id: current_user.id, favorite_user_id: params[:id])
+    halt 404, 'Favorite not found.' if favorites.empty?
+
+    favorites.first.destroy
+    
+    body ''
+    status 200
+end
