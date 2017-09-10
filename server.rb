@@ -62,3 +62,8 @@ post '/tasks' do
     task.to_json(except:[:user_id])
 end
 
+get '/tasks' do
+    current_user = auth
+    tasks = Tasks.where(user_id: current_user.id)
+    { tasks: tasks }.to_json(except:[:user_id])
+end
