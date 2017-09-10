@@ -26,13 +26,11 @@ A Simple tasker
             "id" : 1,
             "name" : "user_name",
             "token" : "awsedrftgyhujikoklp",
-            "created_at": "2017-09-10T01:59:30.915Z",
-            "updated_at": "2017-09-10T01:59:30.915Z"
         }
 
 ### Get a User [GET /users/{id}]
 
-+ Response 200
++ Response 200 (application/json)
 
         {
             "id": 2,
@@ -42,15 +40,13 @@ A Simple tasker
         }
 
 ## Tasks Collection [/tasks]
-### Create tasks[POST]
+### Create taskd [POST]
 + Request
 
         {
             "name":"task_name",
             "cost": 20,
             "deadline": "2017-09-10T01:59:30.915Z",
-            "created_at": "2017-09-10T01:59:30.915Z",
-            "updated_at": "2017-09-10T01:59:30.915Z"
         }
     
     + Headers
@@ -79,7 +75,7 @@ A Simple tasker
             X-Token: awsedrftgyhujikoklp
 
 
-+ Response 200
++ Response 200 (application/json)
 
         {"tasks":[
             {
@@ -99,3 +95,32 @@ A Simple tasker
             },
             
         ]}
+
+
+### Update a task[PUT /tasks/{id}]
+
+他人にタスクを投げるときには一時的に相手のIDを指定します。
+
++ Request
+
+            {
+                "id": 1,
+                "name":"task_name",
+                "cost": 20,
+                "deadline": "2017-09-10T01:59:30.915Z",
+                "user_id": 2
+            }
+
+    + Headers
+
+            X-Token: awsedrftgyhujikoklp
+
++ Response 200 (application/json)
+
+            {
+                "id": 1,
+                "name":"task_name",
+                "cost": 20,
+                "deadline": "2017-09-10T01:59:30.915Z",
+                "user_id": 2
+            }
