@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'sqlite3', group: %i{development test}
 gem 'pg', group: :production
+gem 'puma'
 gem 'activerecord'
 gem 'sinatra-activerecord' , :require => 'sinatra/activerecord'
 gem 'rake'

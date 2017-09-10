@@ -19,6 +19,7 @@ GEM
     mustermann (1.0.1)
     pg (0.21.0)
     power_assert (1.1.0)
+    puma (3.10.0)
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
@@ -47,12 +48,16 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   pg
+  puma
   rack-test
   rake
   sinatra
   sinatra-activerecord
   sqlite3
   test-unit
+
+RUBY VERSION
+   ruby 2.4.1p111
 
 BUNDLED WITH
    1.15.4

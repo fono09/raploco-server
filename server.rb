@@ -4,6 +4,8 @@ Bundler.require
 require 'json'
 require 'securerandom'
 
+configure { set :server, :puma }
+
 helpers do
     def auth
         p request
