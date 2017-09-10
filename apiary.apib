@@ -40,7 +40,7 @@ A Simple tasker
         }
 
 ## Tasks Collection [/tasks]
-### Create taskd [POST]
+### Create task [POST]
 + Request
 
         {
@@ -91,7 +91,7 @@ A Simple tasker
                 "cost": 40,
                 "deadline":"2017-09-10T01:59:30.915Z",
                 "created_at": "2017-09-10T01:59:30.915Z",
-                "updated_at": "2017-09-10T01:59:30.915Z"A
+                "updated_at": "2017-09-10T01:59:30.915Z"
             },
             
         ]}
@@ -124,3 +124,61 @@ A Simple tasker
                 "deadline": "2017-09-10T01:59:30.915Z",
                 "user_id": 2
             }
+
+## Favorite Users Collection [/users/favorites]
+
+### Create Favorite User[POST]
+
++ Request
+
+        {
+            "id": 1,
+        }
+    
+    + Headers
+    
+            X-Token: awsedrftgyhujikoklp
+
++ Response 201 (applicaton/json)
+
+        {
+            "id": 1,
+            "name":"user_name",
+            "created_at":"2017-09-10T01:59:30.915Z",
+            "updated_at": "2017-09-10T01:59:30.915Z"
+        }
+
+### Get Favorite Users[GET]
+
++ Request
+
+    + Headers
+    
+            X-Token: awsedrftgyhujikoklp
+
++ Response 200
+
+        {"users":
+                [{
+                    "id": 2,
+                    "name": "user_name",
+                    "created_at": "2017-09-10T01:59:30.915Z",
+                    "updated_at": "2017-09-10T01:59:30.915Z"
+                },
+                {
+                    "id": 3,
+                    "name": "next_user_name",
+                    "created_at": "2017-09-10T01:59:30.915Z",
+                    "updated_at": "2017-09-10T01:59:30.915Z"
+                }]
+        }
+
+
+### Delete Favorite User[DELETE /users/favorites/{id}]
++ Request
+
+    + Headers
+
+            X-Token: awsedrftgyhujikoklp
+
++ Response 200
