@@ -127,6 +127,17 @@ get '/tasks' do
     { tasks: tasks }.to_json(except:[:user_id])
 end
 
+delete '/tasks/:id' do
+    current_user = auth
+    task = Task.where(user_id: current_user.id, id: params[:id])
+    half 404, 'Task not found.' if task.empty?
+
+    task.first.destroy
+
+    body ''
+    status 200
+end
+
 
 post '/genres' do 
     current_user = auth
