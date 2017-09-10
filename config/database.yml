@@ -1,0 +1,12 @@
+development:
+    adapter: sqlite3
+    dabtabase: rapcolo.sqlite3
+
+test:
+    adapter: sqlite3
+    dabtabase: rapcolo_test.sqlite3
+
+production:
+    adapter: postgresql
+    pool: 5
+    timeout: 5000

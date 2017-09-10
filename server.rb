@@ -4,8 +4,6 @@ Bundler.require
 require 'json'
 require 'securerandom'
 
-set :database, {adapter: "sqlite3", database: "raploco.sqlite3"}
-
 helpers do
     def auth
         p request
