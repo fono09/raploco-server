@@ -9,39 +9,79 @@ set :database, {adapter: "sqlite3", database: "raploco.sqlite3"}
 helpers do
     def auth
         p request
-        user = Users.where(token: request.env["HTTP_X_TOKEN"])
+        user = User.where(token: request.env["HTTP_X_TOKEN"])
         halt 401, 'Unauthorized.' if user.empty?
         user.first
     end
 end
 
-class Users < ActiveRecord::Base
+class User < ActiveRecord::Base
+    has_many :favorites
+    has_many :favorite_users, through: :favorites, source: 'favorite_user'
+
     def self.generate_token
         t = nil
         loop do
             t = SecureRandom.hex(16)
-            break if Users.where(token: t).empty?
+            break if User.where(token: t).empty?
         end
         t
     end
 end
 
 
-class Tasks < ActiveRecord::Base
+class Task < ActiveRecord::Base
 end
 
-class Favorites < ActiveRecord::Base
+class Favorite < ActiveRecord::Base
+    belongs_to :user
+    belongs_to :favorite_user, class_name: 'User', foreign_key: 'favorite_user_id'
 end
 
 get '/ok' do
-    '{"message":"ok"}'
+    {message: 'ok'}.to_json
 end
 
+post '/users/favorites' do
+    current_user = auth
+    user = JSON.parse(request.body.read)
+
+    user = User.where(id: user["id"])
+    halt 404, 'User not found.' if user.empty?
+    user = user.first
+
+    unless Favorite.where(user_id: current_user.id, favorite_user_id:user.id).empty? then
+        favorite = Favorite.new(user_id: current_user.id, favorite_user_id:user.id)
+        favorite.save
+    end
+
+    user.to_json(except:[:token])
+end
+
+
+get '/users/favorites' do
+    current_user = auth
+
+    users = current_user.favorite_users
+    {users: users}.to_json(except:[:token])
+end
+
+delete '/users/favorites/:id' do
+    current_user = auth
+
+    favorites = Favorite.where(user_id: current_user.id, favorite_user_id: params[:id])
+    halt 404, 'Favorite not found.' if favorites.empty?
+
+    favorites.first.destroy
+    
+    body ''
+    status 200
+end
 post '/users' do
     user = JSON.parse(request.body.read)
     halt 400, 'Bad request.' if user["name"] == "" || !user
 
-    user = Users.new(name: user["name"], token: Users.generate_token)
+    user = User.new(name: user["name"], token: User.generate_token)
     user.save
 
     p user
@@ -51,7 +91,7 @@ end
 
 get '/users/:id' do
     current_user = auth
-    user = Users.where(id: params[:id].to_i)
+    user = User.where(id: params[:id].to_i)
     halt 404, 'User not found.' if user.empty?
     user = user.first
 
@@ -61,7 +101,7 @@ end
 post '/tasks' do
     current_user = auth
     task = JSON.parse(request.body.read)
-    task = Tasks.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"])
+    task = Task.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"])
     task.save
     
     task.to_json(except:[:user_id])
@@ -71,7 +111,7 @@ put '/tasks/:id' do
     current_user = auth
     task = JSON.parse(request.body.read)
 
-    t = Tasks.where(id: params[:id].to_i)
+    t = Task.where(id: params[:id].to_i)
     halt 404, 'Task not found.' if t.empty?
     target_task = t.first
 
@@ -82,40 +122,7 @@ end
 
 get '/tasks' do
     current_user = auth
-    tasks = Tasks.where(user_id: current_user.id)
+    tasks = Task.where(user_id: current_user.id)
     { tasks: tasks }.to_json(except:[:user_id])
 end
 
-post '/users/favorites' do
-    current_user = auth
-    user = JSON.parse(request.body.read)
-
-    user = User.where(id: user["id"])
-    halt 404, 'User not found.' if user.empty?
-
-    favorite = Favorites.new(user_id: current_user.id, favorite_user_id:user.id)
-    favorite.save
-
-    user.to_json(except:[:token])
-end
-
-
-get '/users/favorites' do
-    current_user = auth
-
-    users = Favorites.where(user_id: current_user.id).joins(:favorite_user_id, :users)
-
-    {"users":favorites}.to_json(except:[:token, :favorite_id])
-end
-
-delete '/users/favorites/:id' do
-    current_user = auth
-
-    favorites = Favorites.where(user_id: current_user.id, favorite_user_id: params[:id])
-    halt 404, 'Favorite not found.' if favorites.empty?
-
-    favorites.first.destroy
-    
-    body ''
-    status 200
-end
