@@ -104,7 +104,7 @@ end
 post '/tasks' do
     current_user = auth
     task = JSON.parse(request.body.read)
-    task = Task.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"], genre_id: task["genre"])
+    task = Task.new(name: task["name"], user_id: current_user.id, deadline: task["deadline"], cost: task["cost"], genre_id: task["genre_id"])
     task.save
     
     task.to_json(except:[:user_id])
